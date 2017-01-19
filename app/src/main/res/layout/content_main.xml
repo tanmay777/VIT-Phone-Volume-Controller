@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.tanmay.vitringtonecontroller.Entity.TopLevelActivity"
+    tools:showIn="@layout/activity_main">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="What do we do?"
+            android:layout_gravity="center_horizontal"
+            android:textSize="24dp"
+            android:textColor="#000"/>
+        <android.support.v7.widget.CardView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardElevation="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingLeft="5dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="serif"
+                    android:textColor="#000000"
+                    android:textSize="16dp"
+                    android:text="Please chose the building where you would want your phone to go in automatic silent mode:" />
+
+                <CheckBox
+                    android:text="Main Building"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/main_building_checkBox"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="CDMM"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cdmm_checkBox"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="GDN"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gdn_checkBox"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="Library"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/library_checkBox"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="SMV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/smv_checkBox"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="TT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tt_checkBox"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="SJT"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sjt_checkBox"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="85dp"
+            android:weightSum="2">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:fontFamily="serif"
+                android:textSize="16dp"
+                android:text="Turn On"
+                android:gravity="center_horizontal"
+                >
+            </TextView>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:fontFamily="serif"
+                android:textSize="16dp"
+                android:text="Turn Off"
+                android:gravity="center_horizontal">
+            </TextView>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <View
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_height="45dp"
+            android:layout_marginBottom="30dp"
+            android:background="#8000"></View>
+    </LinearLayout>
+
+</FrameLayout>

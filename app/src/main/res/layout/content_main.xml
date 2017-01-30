@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.tanmay.vitringtonecontroller.Entity.TopLevelActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <LinearLayout
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:id="@+id/content_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,7 +31,9 @@
             android:layout_gravity="center_horizontal"
             android:textSize="24dp"
             android:textColor="#000"/>
+
         <android.support.v7.widget.CardView
+            android:layout_marginTop="5dp"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
@@ -31,6 +41,7 @@
             android:layout_margin="5dp"
             card_view:cardCornerRadius="4dp"
             card_view:cardElevation="5dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -43,56 +54,67 @@
                     android:textColor="#000000"
                     android:textSize="16dp"
                     android:text="Please chose the building where you would want your phone to go in automatic silent mode:" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:text="Main Building"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/main_building_checkBox"
+                        android:layout_weight="1" />
 
-                <CheckBox
-                    android:text="Main Building"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/main_building_checkBox"
-                    android:layout_weight="1" />
+                    <CheckBox
+                        android:text="CDMM"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cdmm_checkBox"
+                        android:layout_weight="1" />
 
-                <CheckBox
-                    android:text="CDMM"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cdmm_checkBox"
-                    android:layout_weight="1" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:text="GDN"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gdn_checkBox"
+                        android:layout_weight="1" />
 
-                <CheckBox
-                    android:text="GDN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/gdn_checkBox"
-                    android:layout_weight="1" />
+                    <CheckBox
+                        android:text="Library"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/library_checkBox"
+                        android:layout_weight="1" />
 
-                <CheckBox
-                    android:text="Library"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/library_checkBox"
-                    android:layout_weight="1" />
+                </LinearLayout>
 
-                <CheckBox
-                    android:text="SMV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/smv_checkBox"
-                    android:layout_weight="1" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <CheckBox
+                        android:text="SMV"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/smv_checkBox"
+                        android:layout_weight="1" />
 
-                <CheckBox
-                    android:text="TT"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tt_checkBox"
-                    android:layout_weight="1" />
+                    <CheckBox
+                        android:text="TT"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tt_checkBox"
+                        android:layout_weight="1" />
 
+                </LinearLayout>
                 <CheckBox
                     android:text="SJT"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/sjt_checkBox"
                     android:layout_weight="1" />
-
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
@@ -100,39 +122,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="85dp"
-            android:weightSum="2">
-            <TextView
+            android:weightSum="2"
+            android:layout_marginTop="5dp">
+            <Button
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:fontFamily="serif"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="Turn On"
-                android:gravity="center_horizontal"
-                >
-            </TextView>
-            <TextView
+                android:textColor="#000"
+
+                style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                android:gravity="center_horizontal">
+            </Button>
+            <Button
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:fontFamily="serif"
-                android:textSize="16dp"
+                android:textSize="16sp"
+                style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                 android:text="Turn Off"
+                android:textColor="#000"
                 android:gravity="center_horizontal">
-            </TextView>
+            </Button>
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <View
-            android:layout_width="match_parent"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_height="45dp"
-            android:layout_marginBottom="30dp"
-            android:background="#8000"></View>
-    </LinearLayout>
-
-</FrameLayout>
+</ScrollView>

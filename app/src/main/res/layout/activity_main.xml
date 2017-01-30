@@ -23,4 +23,12 @@
 
     <include layout="@layout/content_main" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="10dp"
+        android:id="@+id/position"
+        android:src="@drawable/ic_location"/>
+
 </android.support.design.widget.CoordinatorLayout>

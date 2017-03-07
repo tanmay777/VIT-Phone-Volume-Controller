@@ -132,11 +132,12 @@
                 android:textSize="16sp"
                 android:text="Turn On"
                 android:textColor="#000"
-
+                android:id="@+id/turn_on"
                 style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                 android:gravity="center_horizontal">
             </Button>
             <Button
+                android:id="@+id/turn_off"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"

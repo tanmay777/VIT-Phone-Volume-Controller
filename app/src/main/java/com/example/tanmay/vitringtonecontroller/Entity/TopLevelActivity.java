@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
@@ -27,12 +28,24 @@ import com.google.android.gms.maps.model.*;
 
 import com.example.tanmay.vitringtonecontroller.R;
 
-public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCallback, android.location.LocationListener {
+public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCallback{
     CheckBox mainBuildingCheckbox,cdmmCheckBox,gdnCheckBox,libraryCheckBox,smvCheckBox,ttCheckBox,sjtCheckBox;
     private GoogleMap mMap;
+    //To access location services we need location manager.
     LocationManager locationManager;
     android.location.LocationListener locationListener;
     FloatingActionButton floatingActionButton;
+    Button turnOn,turnOff;
+    Intent serviceIntent;
+    LatLngBounds latLngBounds;
+    LatLngBounds SJTbounds=new LatLngBounds(new LatLng(12.970162, 79.163478),new LatLng(12.971610, 79.164400));
+    LatLngBounds KblockBockBounds=new LatLngBounds(new LatLng(12.972007, 79.161184),new LatLng(12.972613,79.161734));
+    LatLngBounds cdmmBlockBound= new LatLngBounds(new LatLng(12.969039, 79.154642),new LatLng(12.969272, 79.155242));
+    LatLngBounds mainBuildingBound= new LatLngBounds(new LatLng(12.968908, 79.155376),new LatLng(12.969592, 79.156493));
+    LatLngBounds gdnBlockBound=new LatLngBounds(new LatLng(12.969457, 79.154419),new LatLng(12.970424, 79.155291));
+    LatLngBounds libraryBound=new LatLngBounds(new LatLng(12.969105, 79.156574),new LatLng(12.969654, 79.157156));
+    LatLngBounds smvBound=new LatLngBounds(new LatLng(12.968780, 79.157248),new LatLng(12.969613, 79.158230));
+    LatLngBounds ttBound=new LatLngBounds(new LatLng(12.970176, 79.158893),new LatLng(12.971074, 79.160116));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +67,23 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         smvCheckBox=(CheckBox)findViewById(R.id.smv_checkBox);
         ttCheckBox=(CheckBox)findViewById(R.id.tt_checkBox);
         sjtCheckBox=(CheckBox)findViewById(R.id.sjt_checkBox);
+        turnOn=(Button)findViewById(R.id.turn_on);
+        turnOff=(Button)findViewById(R.id.turn_off);
+
+        turnOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                serviceIntent=new Intent(getApplicationContext(),LocationChangeListenerService.class);
+                startService(serviceIntent);
+            }
+        });
+
+        turnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopService(serviceIntent);
+            }
+        });
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -61,42 +91,35 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Toast.makeText(getBaseContext(), "Gps is turned on!! ",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(intent);
-        Toast.makeText(getBaseContext(), "Gps is turned off!! ",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mMap.clear();
-        //this will be called everytime the location changes
-        mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("You"));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),16));
-        Toast.makeText(getApplicationContext(),"Latitude is"+location.getLatitude()+"Longitute is"+location.getLongitude(),Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-        // Add a marker in Sydney and move the camera
         LatLng delhi = new LatLng(28.7041, 77.1025);
         mMap.addMarker(new MarkerOptions().position(delhi).title("Delhi").snippet("This is my home <3"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delhi,16));
         map.getUiSettings().setZoomGesturesEnabled(true);
+        //onMapLoaded();
     }
+
+    public void onMapLoaded()
+    {
+
+
+
+        /*LatLngBounds curScreen = mMap.getProjection()
+                .getVisibleRegion().latLngBounds;
+        System.out.println(curScreen.toString());
+
+        //top-left corner
+        double topleftlatitude=curScreen.northeast.latitude;
+        double topleftlongitude=curScreen.southwest.longitude;
+        System.out.println("top left==>"+topleftlatitude+"" +topleftlongitude);
+        Toast.makeText(getApplicationContext(),"top left==>"+topleftlatitude+""+topleftlongitude,Toast.LENGTH_SHORT).show();
+        //bottom-right corner
+        double bottomrightlatitude=curScreen.southwest.latitude;
+        double bottomrightlongitude=curScreen.northeast.longitude;
+        Toast.makeText(getApplicationContext(),"bottom right==>"+bottomrightlatitude+"" +bottomrightlongitude,Toast.LENGTH_SHORT).show();*/
+    }
+
 
     //TODO: Add a sharepreference to saved if the check box are ticked or not.
 
@@ -110,9 +133,28 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onLocationChanged(Location location) {
                 mMap.clear();
                 //this will be called everytime the location changes
-                mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("You"));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()),16));
-                Toast.makeText(getApplicationContext(),"Latitude is"+location.getLatitude()+"Longitute is"+location.getLongitude(),Toast.LENGTH_SHORT).show();
+                mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("You"));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
+                Toast.makeText(getApplicationContext(), "Latitude is" + location.getLatitude() + "Longitute is" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                LatLng locationLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                if (SJTbounds.contains(locationLatLng))
+                    Toast.makeText(TopLevelActivity.this, "In SJT", Toast.LENGTH_SHORT).show();
+                else if (KblockBockBounds.contains(locationLatLng))
+                    Toast.makeText(TopLevelActivity.this, "In Kblock", Toast.LENGTH_SHORT).show();
+                else if (cdmmBlockBound.contains(locationLatLng))
+                    Toast.makeText(TopLevelActivity.this, "In CDMM block", Toast.LENGTH_SHORT).show();
+                else if (mainBuildingBound.contains(locationLatLng))
+                    Toast.makeText(getApplicationContext(), "In MainBuilding", Toast.LENGTH_SHORT).show();
+                else if (gdnBlockBound.contains(locationLatLng))
+                    Toast.makeText(getApplicationContext(), "In GDN building", Toast.LENGTH_SHORT).show();
+                else if (libraryBound.contains(locationLatLng))
+                    Toast.makeText(getApplicationContext(), "In library", Toast.LENGTH_SHORT).show();
+                else if (smvBound.contains(locationLatLng))
+                    Toast.makeText(getApplicationContext(), "In SMV", Toast.LENGTH_SHORT).show();
+                else if (ttBound.contains(locationLatLng))
+                    Toast.makeText(getApplicationContext(), "In TT", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getApplicationContext(), "Not in any academic building", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -132,6 +174,9 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
         };
+
+        //LatLngBounds curScreen = mMap.getProjection()
+          //      .getVisibleRegion().latLngBounds;
 
         mainBuildingCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -234,7 +279,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             }
         }
         Log.v("Maps Activity","Check1");
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
         // 0 for min distance doesn't means the location manger will
         // request for location all the time. Instead it means the
         // that it will not only consider secs parameter. Note seconds are in miniseconds
@@ -250,3 +295,16 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 }
+
+/*
+this is for to put the device in silent mode with vibrate
+AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+
+this is for to put into the ringing mode
+AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+
+audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+audioManager.setStreamVolume(AudioManager.STREAM_RING, maxVolume, AudioManager.FLAG_SHOW_UI + AudioManager.FLAG_PLAY_SOUND);
+ */

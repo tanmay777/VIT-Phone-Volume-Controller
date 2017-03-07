@@ -41,7 +41,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
     android.location.LocationListener locationListener;
     FloatingActionButton floatingActionButton;
     Button turnOn,turnOff;
-    Intent serviceIntent=new Intent(TopLevelActivity.this, LocationService.class);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +63,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         sjtCheckBox=(CheckBox)findViewById(R.id.sjt_checkBox);
         turnOn=(Button)findViewById(R.id.turn_on);
         turnOff=(Button)findViewById(R.id.turn_off);
-
+        final Intent serviceIntent=new Intent(TopLevelActivity.this, LocationService.class);
         turnOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +74,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
                         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET}, 10);
                     }
                 }
-                serviceIntent=new Intent(getApplicationContext(),LocationChangeListenerService.class);
                 startService(serviceIntent);
             }
         });

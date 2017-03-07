@@ -1,10 +1,12 @@
 package com.example.tanmay.vitringtonecontroller.Entity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -23,6 +25,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.example.tanmay.vitringtonecontroller.Boundary.Database.BuildingInformation;
+import com.example.tanmay.vitringtonecontroller.Boundary.Service.LocationService;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
@@ -31,22 +35,13 @@ import com.example.tanmay.vitringtonecontroller.R;
 public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCallback{
     CheckBox mainBuildingCheckbox,cdmmCheckBox,gdnCheckBox,libraryCheckBox,smvCheckBox,ttCheckBox,sjtCheckBox;
     private GoogleMap mMap;
+    BuildingInformation buildingInformation=new BuildingInformation();
     //To access location services we need location manager.
     LocationManager locationManager;
     android.location.LocationListener locationListener;
     FloatingActionButton floatingActionButton;
     Button turnOn,turnOff;
-    Intent serviceIntent;
-    LatLngBounds latLngBounds;
-    LatLngBounds SJTbounds=new LatLngBounds(new LatLng(12.970162, 79.163478),new LatLng(12.971610, 79.164400));
-    LatLngBounds KblockBockBounds=new LatLngBounds(new LatLng(12.972007, 79.161184),new LatLng(12.972613,79.161734));
-    LatLngBounds cdmmBlockBound= new LatLngBounds(new LatLng(12.969039, 79.154642),new LatLng(12.969272, 79.155242));
-    LatLngBounds mainBuildingBound= new LatLngBounds(new LatLng(12.968908, 79.155376),new LatLng(12.969592, 79.156493));
-    LatLngBounds gdnBlockBound=new LatLngBounds(new LatLng(12.969457, 79.154419),new LatLng(12.970424, 79.155291));
-    LatLngBounds libraryBound=new LatLngBounds(new LatLng(12.969105, 79.156574),new LatLng(12.969654, 79.157156));
-    LatLngBounds smvBound=new LatLngBounds(new LatLng(12.968780, 79.157248),new LatLng(12.969613, 79.158230));
-    LatLngBounds ttBound=new LatLngBounds(new LatLng(12.970176, 79.158893),new LatLng(12.971074, 79.160116));
-
+    Intent serviceIntent=new Intent(TopLevelActivity.this, LocationService.class);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +68,13 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         turnOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                            android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET}, 10);
+                    }
+                }
                 serviceIntent=new Intent(getApplicationContext(),LocationChangeListenerService.class);
                 startService(serviceIntent);
             }
@@ -136,25 +138,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
                 mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("You"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
                 Toast.makeText(getApplicationContext(), "Latitude is" + location.getLatitude() + "Longitute is" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-                LatLng locationLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                if (SJTbounds.contains(locationLatLng))
-                    Toast.makeText(TopLevelActivity.this, "In SJT", Toast.LENGTH_SHORT).show();
-                else if (KblockBockBounds.contains(locationLatLng))
-                    Toast.makeText(TopLevelActivity.this, "In Kblock", Toast.LENGTH_SHORT).show();
-                else if (cdmmBlockBound.contains(locationLatLng))
-                    Toast.makeText(TopLevelActivity.this, "In CDMM block", Toast.LENGTH_SHORT).show();
-                else if (mainBuildingBound.contains(locationLatLng))
-                    Toast.makeText(getApplicationContext(), "In MainBuilding", Toast.LENGTH_SHORT).show();
-                else if (gdnBlockBound.contains(locationLatLng))
-                    Toast.makeText(getApplicationContext(), "In GDN building", Toast.LENGTH_SHORT).show();
-                else if (libraryBound.contains(locationLatLng))
-                    Toast.makeText(getApplicationContext(), "In library", Toast.LENGTH_SHORT).show();
-                else if (smvBound.contains(locationLatLng))
-                    Toast.makeText(getApplicationContext(), "In SMV", Toast.LENGTH_SHORT).show();
-                else if (ttBound.contains(locationLatLng))
-                    Toast.makeText(getApplicationContext(), "In TT", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(getApplicationContext(), "Not in any academic building", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -176,16 +159,17 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         };
 
         //LatLngBounds curScreen = mMap.getProjection()
-          //      .getVisibleRegion().latLngBounds;
+        //      .getVisibleRegion().latLngBounds;
 
         mainBuildingCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(mainBuildingCheckbox.isChecked())
                 {
-
+                    buildingInformation.setMainBuildingCheckbox(true);
                 }
                 else {
+                    buildingInformation.setMainBuildingCheckbox(false);
 
                 }
             }
@@ -196,10 +180,10 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(cdmmCheckBox.isChecked())
                 {
-
+                    buildingInformation.setCdmmCheckBox(true);
                 }
                 else {
-
+                    buildingInformation.setCdmmCheckBox(false);
                 }
             }
         });
@@ -209,9 +193,10 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(gdnCheckBox.isChecked())
                 {
-
+                    buildingInformation.setGdnCheckBox(true);
                 }
                 else {
+                    buildingInformation.setGdnCheckBox(false);
 
                 }
             }
@@ -222,10 +207,10 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(libraryCheckBox.isChecked())
                 {
-
+                    buildingInformation.setLibraryCheckBox(true);
                 }
                 else {
-
+                    buildingInformation.setLibraryCheckBox(false);
                 }
             }
         });
@@ -235,10 +220,10 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(smvCheckBox.isChecked())
                 {
-
+                    buildingInformation.setSmvCheckBox(true);
                 }
                 else {
-
+                    buildingInformation.setSmvCheckBox(false);
                 }
             }
         });
@@ -248,10 +233,10 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(ttCheckBox.isChecked())
                 {
-
+                    buildingInformation.setTtCheckBox(true);
                 }
                 else {
-
+                    buildingInformation.setTtCheckBox(false);
                 }
             }
         });
@@ -261,10 +246,10 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(sjtCheckBox.isChecked())
                 {
-
+                    buildingInformation.setSjtCheckBox(true);
                 }
                 else {
-
+                    buildingInformation.setSjtCheckBox(false);
                 }
             }
         });
@@ -274,7 +259,9 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         Toast.makeText(getApplicationContext(),"Wait, getting your location",Toast.LENGTH_SHORT).show();
 
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET}, 10);
             }
         }
@@ -294,17 +281,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
                 }
         }
     }
+
+
 }
-
-/*
-this is for to put the device in silent mode with vibrate
-AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-
-this is for to put into the ringing mode
-AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
-
-audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-audioManager.setStreamVolume(AudioManager.STREAM_RING, maxVolume, AudioManager.FLAG_SHOW_UI + AudioManager.FLAG_PLAY_SOUND);
- */

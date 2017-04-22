@@ -1,36 +1,42 @@
-package com.example.tanmay.vitringtonecontroller.Entity;
+package com.example.tanmay.vitringtonecontroller.Entity.Home;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.tanmay.vitringtonecontroller.Boundary.API.APIConstants;
 import com.example.tanmay.vitringtonecontroller.Boundary.Database.BuildingInformation;
 import com.example.tanmay.vitringtonecontroller.Boundary.Service.LocationService;
+import com.example.tanmay.vitringtonecontroller.Entity.Actors.TimetableDetailsModel;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
 import com.example.tanmay.vitringtonecontroller.R;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCallback{
     CheckBox mainBuildingCheckbox,cdmmCheckBox,gdnCheckBox,libraryCheckBox,smvCheckBox,ttCheckBox,sjtCheckBox;
@@ -41,6 +47,8 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
     android.location.LocationListener locationListener;
     FloatingActionButton floatingActionButton;
     Button turnOn,turnOff;
+    Gson gson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,10 +71,13 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         sjtCheckBox=(CheckBox)findViewById(R.id.sjt_checkBox);
         turnOn=(Button)findViewById(R.id.turn_on);
         turnOff=(Button)findViewById(R.id.turn_off);
-        final Intent serviceIntent=new Intent(TopLevelActivity.this, LocationService.class);
+
+        final Intent serviceIntent=new Intent(this, LocationService.class);
+
         turnOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Service is turning on",Toast.LENGTH_SHORT).show();
                 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                             android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -82,12 +93,17 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 stopService(serviceIntent);
+                Toast.makeText(getApplicationContext(),"Service is turning off",Toast.LENGTH_SHORT).show();
             }
         });
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        GsonBuilder gsonBuilder=new GsonBuilder();
+        gson=gsonBuilder.create();
+
     }
 
     @Override
@@ -97,29 +113,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         mMap.addMarker(new MarkerOptions().position(delhi).title("Delhi").snippet("This is my home <3"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(delhi,16));
         map.getUiSettings().setZoomGesturesEnabled(true);
-        //onMapLoaded();
     }
-
-    public void onMapLoaded()
-    {
-
-
-
-        /*LatLngBounds curScreen = mMap.getProjection()
-                .getVisibleRegion().latLngBounds;
-        System.out.println(curScreen.toString());
-
-        //top-left corner
-        double topleftlatitude=curScreen.northeast.latitude;
-        double topleftlongitude=curScreen.southwest.longitude;
-        System.out.println("top left==>"+topleftlatitude+"" +topleftlongitude);
-        Toast.makeText(getApplicationContext(),"top left==>"+topleftlatitude+""+topleftlongitude,Toast.LENGTH_SHORT).show();
-        //bottom-right corner
-        double bottomrightlatitude=curScreen.southwest.latitude;
-        double bottomrightlongitude=curScreen.northeast.longitude;
-        Toast.makeText(getApplicationContext(),"bottom right==>"+bottomrightlatitude+"" +bottomrightlongitude,Toast.LENGTH_SHORT).show();*/
-    }
-
 
     //TODO: Add a sharepreference to saved if the check box are ticked or not.
 
@@ -127,6 +121,29 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
     public void onStart()
     {
         super.onStart();
+
+	String url= APIConstants.TIME_TABLE;
+	final StringRequest request=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        gson.fromJson(response, TimetableDetailsModel.class);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+                    @Override
+                    protected Map<String,String> getParams()
+                    {
+                        Map<String, String>params = new HashMap<>();
+                        params.put("regNo",getIntent().getStringExtra("regNo"));
+                        params.put("psswd",getIntent().getStringExtra("psswd"));
+                        return params;
+                    }
+                };
+                Volley.newRequestQueue(getApplicationContext()).add(request);
 
         locationListener = new android.location.LocationListener() {
             @Override
@@ -155,9 +172,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
         };
-
-        //LatLngBounds curScreen = mMap.getProjection()
-        //      .getVisibleRegion().latLngBounds;
 
         mainBuildingCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -255,7 +269,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
 
     private void findLocation() {
         Toast.makeText(getApplicationContext(),"Wait, getting your location",Toast.LENGTH_SHORT).show();
-
+        buildingInformation.setTurnon(true);
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -263,11 +277,8 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET}, 10);
             }
         }
-        Log.v("Maps Activity","Check1");
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
-        // 0 for min distance doesn't means the location manger will
-        // request for location all the time. Instead it means the
-        // that it will not only consider secs parameter. Note seconds are in miniseconds
+
     }
 
     @Override

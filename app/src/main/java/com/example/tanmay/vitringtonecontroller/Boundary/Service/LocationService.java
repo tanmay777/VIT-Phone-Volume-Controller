@@ -1,22 +1,22 @@
 package com.example.tanmay.vitringtonecontroller.Boundary.Service;
 
-import android.Manifest;
 import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.example.tanmay.vitringtonecontroller.Boundary.Database.BuildingInformation;
-import com.example.tanmay.vitringtonecontroller.Entity.TopLevelActivity;
+import com.example.tanmay.vitringtonecontroller.Entity.Home.TopLevelActivity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
@@ -24,12 +24,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
  * Created by tanmay on 7/3/17.
  */
 
-public class LocationService extends IntentService{
+public class LocationService extends Service implements LocationListener {
 
-    Context context;
     BuildingInformation buildingInformation=new BuildingInformation();
-    LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
-    android.location.LocationListener locationListener;
+    LocationManager locationManager;
     LatLngBounds SJTbounds=new LatLngBounds(new LatLng(12.970162, 79.163478),new LatLng(12.971610, 79.164400));
     LatLngBounds cdmmBlockBound= new LatLngBounds(new LatLng(12.969039, 79.154642),new LatLng(12.969272, 79.155242));
     LatLngBounds mainBuildingBound= new LatLngBounds(new LatLng(12.968908, 79.155376),new LatLng(12.969592, 79.156493));
@@ -40,100 +38,93 @@ public class LocationService extends IntentService{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
-
-        locationListener=new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                LatLng locationLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                if (SJTbounds.contains(locationLatLng)&&buildingInformation.getSjtCheckBox()) {
-                    //   Toast.makeText(TopLevelActivity.this, "In SJT", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else if (cdmmBlockBound.contains(locationLatLng)&&buildingInformation.getCdmmCheckBox()) {
-                    //Toast.makeText(TopLevelActivity.this, "In CDMM block", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else if (mainBuildingBound.contains(locationLatLng)&&buildingInformation.getMainBuildingCheckbox()) {
-                    //Toast.makeText(getApplicationContext(), "In MainBuilding", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else if (gdnBlockBound.contains(locationLatLng)&&buildingInformation.getGdnCheckBox()){
-                    //Toast.makeText(getApplicationContext(), "In GDN building", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else if (libraryBound.contains(locationLatLng)&&buildingInformation.getLibraryCheckBox()) {
-                    //Toast.makeText(getApplicationContext(), "In library", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else if (smvBound.contains(locationLatLng)&&buildingInformation.getSmvCheckBox()) {
-                    //Toast.makeText(getApplicationContext(), "In SMV", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else if (ttBound.contains(locationLatLng)&&buildingInformation.getTtCheckBox()) {
-                    //Toast.makeText(getApplicationContext(), "In TT", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",1);
-                    silentPhone();
-                }
-                else {
-                    //Toast.makeText(getApplicationContext(), "Not in any academic building", Toast.LENGTH_SHORT).show();
-                    //serviceIntent.putExtra("Phone in academic building",0);
-                    loudPhone();
-                }
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-                Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        };
+        Log.v("Check1","Opening or not");
+        locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER  , 3000, 5, this);
         return super.onStartCommand(intent, flags, startId);
     }
 
-
-
+    @Nullable
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-    }
-
-    public LocationService(String name) {
-        super(name);
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     public void silentPhone()
     {
 //this is for to put the device in silent mode with vibrate
+        Toast.makeText(getApplicationContext(),"Phone is going to vibrate mode",Toast.LENGTH_SHORT).show();
         AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
         if(!(audioManager.getRingerMode()==AudioManager.RINGER_MODE_VIBRATE))
-        audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+            audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
     }
 
     public void loudPhone() {
         //this is for to put into the ringing mode
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (!(audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)) {
-               int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+            Toast.makeText(getApplicationContext(),"Phone is going to normal mode",Toast.LENGTH_SHORT).show();
+            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
 
             audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
             audioManager.setStreamVolume(AudioManager.STREAM_RING, maxVolume, AudioManager.FLAG_SHOW_UI + AudioManager.FLAG_PLAY_SOUND);
         }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        if(buildingInformation.getTurnon()) {
+            LatLng locationLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            if (SJTbounds.contains(locationLatLng) && buildingInformation.getSjtCheckBox()) {
+                Toast.makeText(getApplicationContext(), "In SJT", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else if (cdmmBlockBound.contains(locationLatLng) && buildingInformation.getCdmmCheckBox()) {
+                Toast.makeText(getApplicationContext(), "In CDMM block", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else if (mainBuildingBound.contains(locationLatLng) && buildingInformation.getMainBuildingCheckbox()) {
+                Toast.makeText(getApplicationContext(), "In MainBuilding", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else if (gdnBlockBound.contains(locationLatLng) && buildingInformation.getGdnCheckBox()) {
+                Toast.makeText(getApplicationContext(), "In GDN building", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else if (libraryBound.contains(locationLatLng) && buildingInformation.getLibraryCheckBox()) {
+                Toast.makeText(getApplicationContext(), "In library", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else if (smvBound.contains(locationLatLng) && buildingInformation.getSmvCheckBox()) {
+                Toast.makeText(getApplicationContext(), "In SMV", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else if (ttBound.contains(locationLatLng) && buildingInformation.getTtCheckBox()) {
+                Toast.makeText(getApplicationContext(), "In TT", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",1);
+                silentPhone();
+            } else {
+                Toast.makeText(getApplicationContext(), "Not in any academic building", Toast.LENGTH_SHORT).show();
+                //serviceIntent.putExtra("Phone in academic building",0);
+                loudPhone();
+            }
+        }else
+            Toast.makeText(getApplicationContext(),"Turn it on. To use the service",Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

@@ -29,7 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     EditText registrationNo,pwd;
     TextView view;
     Button login;
-    Gson gson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,14 +36,10 @@ public class LoginActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        registrationNo=(EditText)findViewById(R.id.regisno);
-        pwd=(EditText)findViewById(R.id.pwd);
-        view=(TextView)findViewById(R.id.view);
-        login=(Button)findViewById(R.id.login);
-
-        GsonBuilder gsonBuilder=new GsonBuilder();
-        gsonBuilder.setDateFormat("M/d/yy hh:mm a");
-        gson=gsonBuilder.create();
+        registrationNo = (EditText) findViewById(R.id.regisno);
+        pwd = (EditText) findViewById(R.id.pwd);
+        view = (TextView) findViewById(R.id.view);
+        login = (Button) findViewById(R.id.login);
     }
 
     @Override
@@ -61,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         view.setText(response);
-                        LoginDetailsModel loginDetailsModel=gson.fromJson(response, LoginDetailsModel.class);
+                        LoginDetailsModel loginDetailsModel=new Gson().fromJson(response, LoginDetailsModel.class);
                         Log.v("Response",response);
                         Log.v("In Response","Test1 ");
                         Log.v("Response",loginDetailsModel.getStatus().getMessage());

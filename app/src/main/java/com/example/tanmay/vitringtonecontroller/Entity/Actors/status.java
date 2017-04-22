@@ -7,14 +7,13 @@ package com.example.tanmay.vitringtonecontroller.Entity.Actors;
 public class status {
 
     static String message="Invalid Credentials";
-    static String code;
-
+    static Integer code;
 
     public static void setMessage(String message) {
         status.message= message;
     }
 
-    public static void setCode(String code) {
+    public static void setCode(Integer code) {
         status.code = code;
     }
 
@@ -22,7 +21,7 @@ public class status {
         return message;
     }
 
-    public static String getCode() {
+    public static Integer getCode() {
         return code;
     }
 

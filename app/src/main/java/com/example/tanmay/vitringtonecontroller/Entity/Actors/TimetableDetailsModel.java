@@ -6,10 +6,13 @@ package com.example.tanmay.vitringtonecontroller.Entity.Actors;
 
 public class TimetableDetailsModel {
 
-   /* static String day;
-    static daytheory;
+    static String day;
+    static theory theory;
+    static lab lab;
 
-    timetable": [
+}
+
+   /* timetable": [
     {
         "day": "MON",
             "theory": {
@@ -42,4 +45,3 @@ public class TimetableDetailsModel {
                 "19:30to20:20": "",
                 "20:20to21:10": ""
     }*/
-}

@@ -35,7 +35,9 @@ import com.example.tanmay.vitringtonecontroller.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCallback{
@@ -47,7 +49,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
     android.location.LocationListener locationListener;
     FloatingActionButton floatingActionButton;
     Button turnOn,turnOff;
-    Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,9 +102,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         mapFragment.getMapAsync(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        GsonBuilder gsonBuilder=new GsonBuilder();
-        gson=gsonBuilder.create();
-
     }
 
     @Override
@@ -126,7 +124,14 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
 	final StringRequest request=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        gson.fromJson(response, TimetableDetailsModel.class);
+                        ArrayList<TimetableDetailsModel> timetableDetailsModels = new ArrayList<TimetableDetailsModel>();
+                        List<TimetableDetailsModel> list = new Gson().fromJson(response, timetableDetailsModels.getClass());
+
+                        for (Object a : list)
+                        {
+                            System.out.println(a);
+                        }
+
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -291,5 +296,9 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+
+    //TODO: Would I need to login first here to get the time table?
+    //TODO: Can't I change the name of java classes required by gson?
+    //TODO: How to create json when timeformatisnot allowed is not available?
 
 }

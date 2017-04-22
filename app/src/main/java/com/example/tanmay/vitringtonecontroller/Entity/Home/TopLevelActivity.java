@@ -124,14 +124,14 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
 	final StringRequest request=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        ArrayList<TimetableDetailsModel> timetableDetailsModels = new ArrayList<TimetableDetailsModel>();
+/*                        ArrayList<TimetableDetailsModel> timetableDetailsModels = new ArrayList<TimetableDetailsModel>();
                         List<TimetableDetailsModel> list = new Gson().fromJson(response, timetableDetailsModels.getClass());
 
                         for (Object a : list)
                         {
                             System.out.println(a);
                         }
-
+*/
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -298,7 +298,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
 
 
     //TODO: Would I need to login first here to get the time table?
-    //TODO: Can't I change the name of java classes required by gson?
-    //TODO: How to create json when timeformatisnot allowed is not available?
+    //TODO: Can't I change the name of java classes required by gson? Create Inner class to solve it.
+    //TODO: How to create json when timeformatisnot allowed is not available? @SerializedName("8:00to8:50") String a;
 
 }

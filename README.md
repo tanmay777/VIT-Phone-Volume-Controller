@@ -1,0 +1,2 @@
+This application ask users in which college building would they want their phone to go in silent mode. Then according to the chosen building their phone will go to silent mode as they enter the building and then back to normal mode when they exit.
+The logic what it uses is that it will first check the user timetable obtained when the logged in using VIT user login. Then when they enter the building then there will be a cross check if the location obtained from gps and what location timetable gives are same. And accordinly actions will be taken.

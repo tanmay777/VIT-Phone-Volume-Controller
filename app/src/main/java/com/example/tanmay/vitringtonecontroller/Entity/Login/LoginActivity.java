@@ -1,12 +1,16 @@
 package com.example.tanmay.vitringtonecontroller.Entity.Login;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView view;
     Button login;
     ProgressDialog mProgressDialog;
+    TextInputLayout registrationNoLayout,psswdLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         pwd = (EditText) findViewById(R.id.pwd);
         view = (TextView) findViewById(R.id.view);
         login = (Button) findViewById(R.id.login);
+        registrationNoLayout=(TextInputLayout)findViewById(R.id.input_layout_regisno);
+        psswdLayout=(TextInputLayout)findViewById(R.id.input_layout_pwd);
     }
 
     @Override
@@ -54,45 +61,83 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //showProgressDialog();
-                String url= APIConstants.LOGIN_URL;
-                Log.v("Before Volley request","Test1 ");
-                final StringRequest request=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        LoginModel loginModel=new Gson().fromJson(response, LoginModel.class);
-                        if(loginModel.getStatus().getMessage().equals("Success"))
-                        {
-                            Intent TopLevelActivtyIntent=new Intent(getApplicationContext(), TopLevelActivity.class);
-                            TopLevelActivtyIntent.putExtra("regNo",registrationNo.getText().toString());
-                            TopLevelActivtyIntent.putExtra("psswd",pwd.getText().toString());
-                            startActivity(TopLevelActivtyIntent);
+                if(registrationNo.getText().toString().trim().isEmpty()||pwd.getText().toString().trim().isEmpty())
+                {
+                    if(registrationNo.getText().toString().trim().isEmpty()) {
+                        registrationNoLayout.setErrorEnabled(true);
+                        registrationNoLayout.setError("Enter the registration no");
+
+                        if (registrationNo.requestFocus()) {
+                            InputMethodManager imm = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(registrationNo, InputMethodManager.SHOW_IMPLICIT);
                         }
-                        else if(loginModel.getStatus().getMessage().equals("Invalid Credentials"))
-                        {
-                            Toast.makeText(getApplicationContext(),"Invalid Credential",Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                            Toast.makeText(getApplicationContext(),"Enter the credentials first",Toast.LENGTH_SHORT).show();
-                        //hideProgressDialog();
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Toast.makeText(getApplicationContext(),"Error Occurred",Toast.LENGTH_SHORT).show();
-                        hideProgressDialog();
-                    }
-                }){
-                    @Override
-                    protected Map<String,String> getParams()
+                    else
                     {
-                        Map<String, String>params = new HashMap<>();
-                        params.put("regNo",registrationNo.getText().toString());
-                        params.put("psswd",pwd.getText().toString());
-                        return params;
+                        registrationNoLayout.setErrorEnabled(false);
                     }
-                };
-                Volley.newRequestQueue(getApplicationContext()).add(request);
+
+                    if(pwd.getText().toString().isEmpty())
+                    {
+                        psswdLayout.setErrorEnabled(true);
+                        psswdLayout.setError("Enter the password");
+
+                        if(pwd.requestFocus())
+                        {
+                            InputMethodManager imm = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(pwd, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    }
+
+                    else
+                        psswdLayout.setErrorEnabled(false);
+                }
+                else{
+                    registrationNoLayout.setErrorEnabled(false);
+                    psswdLayout.setErrorEnabled(false);
+
+                    String url= APIConstants.LOGIN_URL;
+                    Log.v("Before Volley request","Test1 ");
+                    final StringRequest request=new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            LoginModel loginModel=new Gson().fromJson(response, LoginModel.class);
+                            if(loginModel.getStatus().getMessage().equals("Success"))
+                            {
+                                Intent TopLevelActivtyIntent=new Intent(getApplicationContext(), TopLevelActivity.class);
+                                TopLevelActivtyIntent.putExtra("regNo",registrationNo.getText().toString());
+                                TopLevelActivtyIntent.putExtra("psswd",pwd.getText().toString());
+                                startActivity(TopLevelActivtyIntent);
+                            }
+                            else if(loginModel.getStatus().getMessage().equals("Invalid Credentials"))
+                            {
+                                Toast.makeText(getApplicationContext(),"Invalid Credential",Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                                Toast.makeText(getApplicationContext(),"Enter the credentials first",Toast.LENGTH_SHORT).show();
+                            //hideProgressDialog();
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            Toast.makeText(getApplicationContext(),"Error Occurred",Toast.LENGTH_SHORT).show();
+                            hideProgressDialog();
+                        }
+                    }){
+                        @Override
+                        protected Map<String,String> getParams()
+                        {
+                            Map<String, String>params = new HashMap<>();
+                            params.put("regNo",registrationNo.getText().toString());
+                            params.put("psswd",pwd.getText().toString());
+                            return params;
+                        }
+                    };
+                    Volley.newRequestQueue(getApplicationContext()).add(request);
+                }
             }
         });
 

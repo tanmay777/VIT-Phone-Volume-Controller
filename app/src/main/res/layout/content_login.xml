@@ -29,14 +29,25 @@
         android:fontFamily="serif"
         android:layout_gravity="center_horizontal"
         android:text="Login" />
-    <EditText
-        android:layout_marginTop="40dp"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:id="@+id/regisno"
         android:layout_gravity="center_horizontal"
-        android:text="15BCE0618"/>
+        android:id="@+id/input_layout_regisno">
+        <EditText
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:id="@+id/regisno"
+            android:text="15BCE0618"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/input_layout_pwd">
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,6 +56,7 @@
         android:id="@+id/pwd"
         android:inputType="textPassword"
         android:text="#Tanmay_Jha1996"/>
+    </android.support.design.widget.TextInputLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

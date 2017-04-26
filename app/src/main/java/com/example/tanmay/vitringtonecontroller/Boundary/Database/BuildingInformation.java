@@ -68,23 +68,22 @@ public class BuildingInformation {
 
     }
 
-    static Boolean mainBuildingCheckbox;
-    static Boolean cdmmCheckBox;
-    static Boolean gdnCheckBox;
-    static Boolean libraryCheckBox;
-    static Boolean smvCheckBox;
-    static Boolean ttCheckBox;
-    static Boolean sjtCheckBox;
+    static Boolean mainBuildingCheckbox=false;
+    static Boolean cdmmCheckBox=false;
+    static Boolean gdnCheckBox=false;
+    static Boolean libraryCheckBox=false;
+    static Boolean smvCheckBox=false;
+    static Boolean ttCheckBox=false;
+    static Boolean sjtCheckBox=false;
 
     public static void setTurnon(Boolean turnon) {
         BuildingInformation.turnon = turnon;
     }
 
     public static Boolean getTurnon() {
-
         return turnon;
     }
 
-    static Boolean turnon;
+    static Boolean turnon=false;
 
 }

@@ -79,6 +79,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(),"Service is turning on",Toast.LENGTH_SHORT).show();
+                buildingInformation.setTurnon(true);
                 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                             android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -93,6 +94,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         turnOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buildingInformation.setTurnon(false);
                 stopService(serviceIntent);
                 Toast.makeText(getApplicationContext(),"Service is turning off",Toast.LENGTH_SHORT).show();
             }
@@ -100,8 +102,9 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
     }
 
     @Override
@@ -283,7 +286,6 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
             }
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
-
     }
 
     @Override

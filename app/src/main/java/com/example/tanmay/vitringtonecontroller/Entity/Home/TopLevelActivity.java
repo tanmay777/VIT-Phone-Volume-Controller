@@ -56,6 +56,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         floatingActionButton=(FloatingActionButton)findViewById(R.id.position);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,7 +161,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
                 //this will be called everytime the location changes
                 mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("You"));
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
-                Toast.makeText(getApplicationContext(), "Latitude is" + location.getLatitude() + "Longitute is" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "From UI Thread: "+"Latitude is" + location.getLatitude() + "Longitute is" + location.getLongitude(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -275,6 +276,12 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
+    }
+
     private void findLocation() {
         Toast.makeText(getApplicationContext(),"Wait, getting your location",Toast.LENGTH_SHORT).show();
         buildingInformation.setTurnon(true);
@@ -285,7 +292,7 @@ public class TopLevelActivity extends AppCompatActivity implements OnMapReadyCal
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET}, 10);
             }
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1800000, 0, locationListener);
     }
 
     @Override

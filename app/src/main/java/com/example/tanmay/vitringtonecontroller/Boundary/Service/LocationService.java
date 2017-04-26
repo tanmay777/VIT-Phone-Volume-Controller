@@ -47,7 +47,7 @@ public class LocationService extends Service {
         locationListener = new android.location.LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-
+                Toast.makeText(getApplicationContext(), "From Service Thread: "+"Latitude is" + location.getLatitude() + "Longitute is" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 if (buildingInformation.getTurnon()) {
                     LatLng locationLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     if (SJTbounds.contains(locationLatLng) && buildingInformation.getSjtCheckBox()) {
@@ -85,12 +85,7 @@ public class LocationService extends Service {
                         //serviceIntent.putExtra("Phone in academic building",0);
                         loudPhone();
                     }
-                } else{
-                    Toast.makeText(getApplicationContext(), "Turn it on. To use the service", Toast.LENGTH_SHORT).show();
-                    Log.v("building information is",Boolean.toString(buildingInformation.getTurnon()));
                 }
-
-
             }
 
             @Override
@@ -109,17 +104,16 @@ public class LocationService extends Service {
             }
         };
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 5, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,  1800000, 0, locationListener);
 
         return super.onStartCommand(intent, flags, startId);
-
-
     }
 
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+
         return null;
     }
 
